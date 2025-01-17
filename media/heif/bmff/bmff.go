@@ -725,7 +725,22 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 		}
 		ent.DataReferenceIndex, _ = br.readUint16()
 		if br.ok() && ilb.baseOffsetSize > 0 {
-			br.Discard(int(ilb.baseOffsetSize) / 8)
+			// br.Discard(int(ilb.baseOffsetSize) / 8) // BUG: THIS IS WRONG!!!
+			if ilb.baseOffsetSize == 4 {
+				buf32, err := br.Peek(4)
+				if err != nil {
+					return nil, err
+				}
+				ent.BaseOffset = uint64(binary.BigEndian.Uint32(buf32))
+				br.Discard(4)
+			} else if ilb.baseOffsetSize == 8 {
+				buf64, err := br.Peek(8)
+				if err != nil {
+					return nil, err
+				}
+				ent.BaseOffset = binary.BigEndian.Uint64(buf64)
+				br.Discard(8)
+			}
 		}
 		ent.ExtentCount, _ = br.readUint16()
 		for j := 0; br.ok() && j < int(ent.ExtentCount); j++ {
