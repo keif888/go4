@@ -670,7 +670,7 @@ func parseImageSpatialExtentsProperty(outer *box, br *bufReader) (Box, error) {
 	}, nil
 }
 
-type Extent struct {
+type OffsetLength struct {
 	Index, Offset, Length uint64
 }
 
@@ -681,7 +681,7 @@ type ItemLocationBoxEntry struct {
 	DataReferenceIndex uint16
 	BaseOffset         uint64 // uint32 or uint64, depending on encoding
 	ExtentCount        uint16
-	Extents            []Extent
+	Extents            []OffsetLength
 }
 
 // box "iloc"
@@ -786,7 +786,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 		}
 		ent.ExtentCount, _ = br.readUint16()
 		for j := 0; br.ok() && j < int(ent.ExtentCount); j++ {
-			var ol Extent
+			var ol OffsetLength
 
 			switch fb.Version {
 			case 0:
