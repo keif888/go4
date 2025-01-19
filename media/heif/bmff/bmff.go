@@ -700,7 +700,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 		return nil, err
 	}
 	if fb.Version > 2 {
-		return nil, fmt.Errorf("go4 heif: error unsupported iloc version of %v", fb.Version)
+		return nil, fmt.Errorf("error unsupported iloc version of %d", fb.Version)
 	}
 	ilb := &ItemLocationBox{
 		FullBox: fb,
@@ -718,7 +718,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 	case 1, 2:
 		ilb.indexSize = buf[1] & 15
 	default:
-		return nil, fmt.Errorf("go4 heif: error unsupported iloc version of %v", fb.Version)
+		return nil, fmt.Errorf("error unsupported iloc version of %d", fb.Version)
 	}
 	br.Discard(2)
 	switch fb.Version {
@@ -737,7 +737,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 		ilb.ItemCount = binary.BigEndian.Uint32(buf32)
 		br.Discard(4)
 	default:
-		return nil, fmt.Errorf("go4 heif: error unsupported iloc version of %v", fb.Version)
+		return nil, fmt.Errorf("error unsupported iloc version of %d", fb.Version)
 	}
 
 	for i := 0; br.ok() && i < int(ilb.ItemCount); i++ {
@@ -749,7 +749,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 		case 2:
 			ent.ItemID, _ = br.readUint32()
 		default:
-			return nil, fmt.Errorf("go4 heif: error unsupported iloc version of %v", fb.Version)
+			return nil, fmt.Errorf("error unsupported iloc version of %d", fb.Version)
 		}
 		switch fb.Version {
 		case 0:
@@ -758,7 +758,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 			cmeth, _ := br.readUint16()
 			ent.ConstructionMethod = byte(cmeth & 15)
 		default:
-			return nil, fmt.Errorf("go4 heif: error unsupported iloc version of %v", fb.Version)
+			return nil, fmt.Errorf("error unsupported iloc version of %d", fb.Version)
 		}
 		ent.DataReferenceIndex, _ = br.readUint16()
 		if br.ok() && ilb.baseOffsetSize > 0 {
@@ -781,7 +781,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 				ent.BaseOffset = binary.BigEndian.Uint64(buf64)
 				br.Discard(8)
 			default:
-				return nil, fmt.Errorf("go4 heif: error baseOffsetSize of %v is not supported", ilb.baseOffsetSize)
+				return nil, fmt.Errorf("error baseOffsetSize of %d is not supported", ilb.baseOffsetSize)
 			}
 		}
 		ent.ExtentCount, _ = br.readUint16()
@@ -810,10 +810,10 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 					ol.Index = binary.BigEndian.Uint64(buf64)
 					br.Discard(8)
 				default:
-					return nil, fmt.Errorf("go4 heif: error indexSize of %v is not supported", ilb.indexSize)
+					return nil, fmt.Errorf("error indexSize of %d is not supported", ilb.indexSize)
 				}
 			default:
-				return nil, fmt.Errorf("go4 heif: error unsupported iloc version of %v", fb.Version)
+				return nil, fmt.Errorf("error unsupported iloc version of %d", fb.Version)
 			}
 			switch ilb.offsetSize {
 			case 0:
@@ -833,7 +833,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 				ol.Offset = binary.BigEndian.Uint64(buf64)
 				br.Discard(8)
 			default:
-				return nil, fmt.Errorf("go4 heif: error offsetSize of %v is not supported", ilb.offsetSize)
+				return nil, fmt.Errorf("error offsetSize of %d is not supported", ilb.offsetSize)
 			}
 			switch ilb.lengthSize {
 			case 0:
@@ -853,7 +853,7 @@ func parseItemLocationBox(outer *box, br *bufReader) (Box, error) {
 				ol.Length = binary.BigEndian.Uint64(buf64)
 				br.Discard(8)
 			default:
-				return nil, fmt.Errorf("go4 heif: error lengthSize of %v is not supported", ilb.lengthSize)
+				return nil, fmt.Errorf("error lengthSize of %d is not supported", ilb.lengthSize)
 			}
 
 			if br.err != nil {
